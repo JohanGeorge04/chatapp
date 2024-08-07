@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+      <title>Login</title>
+      <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+      <style>
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: sans-serif;
+                line-height: 1.5;
+                min-height: 100vh;
+                background: #f3f3f3;
+                flex-direction: column;
+                margin: 0;
+            }
+
+            .main {
+                background-color: #fff;
+                border-radius: 15px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+                padding: 10px 20px;
+                transition: transform 0.2s;
+                width: 500px;
+                text-align: center;
+            }
+
+            h1 {
+                color: #4CAF50;
+            }
+
+            label {
+                display: block;
+                width: 100%;
+                margin-top: 10px;
+                margin-bottom: 5px;
+                text-align: left;
+                color: #555;
+                font-weight: bold;
+            }
+
+            input {
+                display: block;
+                width: 100%;
+                margin-bottom: 15px;
+                padding: 10px;
+                box-sizing: border-box;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+            }
+
+            button {
+                padding: 15px;
+                border-radius: 10px;
+                margin-top: 15px;
+                margin-bottom: 15px;
+                border: none;
+                color: white;
+                cursor: pointer;
+                background-color: #4CAF50;
+                width: 100%;
+                font-size: 16px;
+            }
+
+            .wrap {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .form-popup {
+                display: none;
+                position: fixed;
+            }
+
+            .form-container {
+                width: 500px;
+                padding: 10px;
+                background-color: white;
+            }
+
+            .form-container input[type=text], 
+            .form-container input[type=password] {
+                width: 100%;
+                padding: 15px;
+                margin: 5px 0 22px 0;
+                border: none;
+                background: #f1f1f1;
+            }
+
+            .form-container input[type=text]:focus, 
+            .form-container input[type=password]:focus {
+                background-color: #ddd;
+                outline: none;
+            }
+
+            .form-container .btn {
+                background-color: #04AA6D;
+                color: white;
+                padding: 16px 20px;
+                border: none;
+                cursor: pointer;
+                width: 100%;
+                margin-bottom: 10px;
+                opacity: 0.8;
+            }
+
+            .form-container .cancel {
+                background-color: red;
+            }
+
+            .form-container .btn:hover, 
+            .open-button:hover {
+                opacity: 1;
+            }
+
+            .form-popup.thank_you {
+                width: 500px;
+                padding: 10px;
+                background-color: white;
+                text-align: center;
+            }
+
+            .close-button {
+                padding: 10px 15px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                cursor: pointer;
+                border-radius: 5px;
+            }
+      </style>
+
+      <div class="main">
+            <h1>Welcome</h1>
+            <h3>Enter your login credentials</h3>
+            <form method="post" action="/sign_in">
+                  <label for="uname">Username:</label>
+                  <input type="text" id="uname" name="uname" placeholder="Enter your Username" required>
+
+                  <label for="pass">Password:</label>
+                  <input type="password" id="pass" name="pass" placeholder="Enter your Password" required>
+
+                  <div class="wrap">
+                        <button type="submit">Submit</button>
+                  </div>
+            </form>
+            <p>Not registered?
+                  <button class="open-button" onclick="openForm()">Create an account</button>
+            </p>
+            <p>or  
+                  <a href="/indexg" style="text-decoration: none;">Continue as guest</a>
+            </p>
+      </div>
+
+      <div class="form-popup" id="myForm">
+            <form id="registerForm" action="/reg" method="post" class="form-container">
+                  <h1>Register</h1>
+
+                  <label for="uname"><b>Username</b></label>
+                  <input type="text" placeholder="Enter Username" name="uname" required>
+
+                  <label for="pass"><b>Password</b></label>
+                  <input type="password" placeholder="Enter Password" name="pass" required>
+
+                  <label for="pass1"><b>Re-Enter Password</b></label>
+                  <input type="password" placeholder="Enter Password" name="pass1" required>
+
+                  <button type="submit" class="btn">Register</button>
+                  <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+            </form>
+      </div>
+
+      <div  id="message">
+            
+      </div>
+
+      <script>
+            function openForm() {
+                  document.getElementById("myForm").style.display = "block";
+            }
+
+            function clearUrlParams() {
+            const url = window.location.href.split('?')[0];
+            window.history.replaceState({}, document.title, url);
+        }
+
+   
+        const urlParams = new URLSearchParams(window.location.search);
+        const success = urlParams.get('success');
+        const logsuccess = urlParams.get('logsuccess');
+
+        if (success === 'true') {
+            document.getElementById('message').innerText = 'You have successfully registered!';
+            document.getElementById('message').style.color = 'green';
+            clearUrlParams(); 
+        } else if (success === 'false') {
+            document.getElementById('message').innerText = 'Registration failed. Passwords do not match or an error occurred.';
+            document.getElementById('message').style.color = 'red';
+            clearUrlParams(); 
+        }
+        if (logsuccess === 'false') {
+            document.getElementById('message').innerText = 'Entered invalid username or password';
+            document.getElementById('message').style.color = 'red';
+            clearUrlParams(); 
+        }
+            
+
+            function closeForm() {
+                  document.getElementById("myForm").style.display = "none";
+                  document.getElementById('thank_you').style.display = "none";
+            }
+      </script>
+</body>
+
+</html>
