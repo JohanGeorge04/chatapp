@@ -7,6 +7,8 @@ const bodyParser = require('body-parser');
 const socketIoSession = require('socket.io-express-session');
 require('dotenv').config();
 
+
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
@@ -115,14 +117,36 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
   });
 });
+app.get('/user-status', (req, res) => {
+ 
+  res.json({
+    online: onlineUsers.size,
+    onlinem: Array.from(onlineUsers),
+   
+  });
+});
 
 
 io.use(socketIoSession(sessionMiddleware));
 
+const onlineUsers = new Set();
+
 
 io.on('connection', (socket) => {
   console.log('A user connected');
+  if(socket.handshake.session.user){
+    const username = socket.handshake.session.user.username;
+    onlineUsers.add(username);
+  
+  io.emit('user status', {
+    online: onlineUsers.size,
+    onlinem: Array.from(onlineUsers)
+    
+  });
+}
+    
 
+  
   
   db.query('SELECT content, timestamp, uname FROM messages ORDER BY timestamp ASC', (err, results) => {
     if (err) return console.error('Database query error:', err);
@@ -133,6 +157,9 @@ io.on('connection', (socket) => {
 
   socket.on('chat message', (msg) => {
     const username = socket.handshake.session.user.username;
+   
+  
+    
     const query = 'INSERT INTO messages (content, timestamp, uname) VALUES (?, CURRENT_TIMESTAMP, ?)';
     db.query(query, [msg, username], (err) => {
       if (err) return console.error('Database query error:', err);
@@ -142,7 +169,18 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('User disconnected');
+    if (socket.handshake.session.user) {
+      const username = socket.handshake.session.user.username;
+      onlineUsers.delete(username);
+   
+    io.emit('user status', {
+      online: onlineUsers.size,
+      onlinem: Array.from(onlineUsers)
+     
+    });
+  }
   });
+  
 });
 
 const PORT = process.env.PORT || 3000;

@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  </script>
+
   <title>Chat Application</title>
   <style>
     body { 
@@ -53,8 +55,8 @@
       border: none; 
       padding: 0 1rem; 
       flex-grow: 1; 
-      border-radius: 2rem; 
-      margin-right: 0.5rem; 
+      border-radius: 0.1rem; 
+      margin-right: -10rem; 
       font-size: 1rem; 
     }
 
@@ -113,7 +115,21 @@
       color: black;
       font-size: 1em;
     }
+    .side {
+  overflow: hidden;
+  width: 10%;
+  margin-left: 10px;
+  position: fixed; 
+  left: 0;
+  top: 50px;
+  height: 100vh; 
 
+  z-index: 100;
+}
+
+     .side #online-users{
+      margin-left: 40px;
+     }
     .topnav {
       background-color: #333;
       overflow: hidden;
@@ -142,6 +158,8 @@
       background-color: #5b5b5b;
       color: white;
     }
+
+
   </style>
 </head>
 
@@ -149,18 +167,27 @@
   <div class="topnav">
     <a class="active" href="/logout">Logout</a>
   </div>
+  <div class="side">
+    <div id="online-users">Online users: </div>
+  </div>
   <div id="chat-container">
+   
+
+
     <div id="messages-container">
       <ul id="messages"></ul>
     </div>
     <form id="form" action="">
       <input id="input" autocomplete="off" placeholder="Type a message..." />
+      
       <button>Send</button>
+  
     </form>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
     var socket = io();
     var messages = document.getElementById('messages');
     var form = document.getElementById('form');
@@ -202,6 +229,23 @@
       messages.appendChild(item);
 
       messages.parentElement.scrollTop = messages.parentElement.scrollHeight;
+      fetch('/user-status')
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById('online-users').innerText = `Online users: ${data.online} ${data.onlinem} `;
+   
+  })
+  .catch(error => console.error('Error fetching user status:', error));
+  io.emit('user status', {
+  online: onlineUsers.size,
+  onlinem: Array.from(onlineUsers)
+});
+
+socket.on('user status', (data) => {
+  document.getElementById('online-users').innerText = `Online users: ${data.online} ${data.onlinem}`;
+ 
+});
+
     });
   </script>
 </body>
